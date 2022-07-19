@@ -22,12 +22,8 @@ export class AuthService {
   get currentUser(){
     return this.authentication.authState
   }
-
-  singUpWithEmailAndPassword( email: string, password : string){
-
-  return from (this.authentication.createUserWithEmailAndPassword(email,password))
-  .pipe(
-    tap((credencials) => {
+  private saveUserData(){
+    return tap((credencials:firebase.default.auth.UserCredential) => {
       const uid = credencials.user?.uid as string
 
       const email = credencials.user?.email as string
@@ -42,6 +38,14 @@ export class AuthService {
 
       credencials.user?.sendEmailVerification()
     })
+  }
+
+  singUpWithEmailAndPassword( email: string, password : string){
+
+  return from (this.authentication.createUserWithEmailAndPassword(email,password))
+  .pipe(
+    this.saveUserData()
+    
   )
   }
   signInWithEmailAndPassword(email: string, password: string) {
@@ -52,9 +56,11 @@ export class AuthService {
     const googleProvider = new GoogleAuthProvider 
   
     return from (this.authentication.signInWithPopup(googleProvider))
+    .pipe(
+      this.saveUserData()
+    )
   }
   
-
   singOut(){
     return from (this.authentication.signOut()).pipe(
       tap(()=> {
