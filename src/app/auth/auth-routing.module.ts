@@ -1,3 +1,4 @@
+import { EmailVerificationComponent } from './pages/email-verification/email-verification.component';
 
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
@@ -17,6 +18,10 @@ const routes: Routes = [
   {
     path:'register',
     component: RegisterComponent
+  },
+  {
+    path:'verify-email',
+    component: EmailVerificationComponent
   }
 ];
 
