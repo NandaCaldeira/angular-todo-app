@@ -1,3 +1,4 @@
+import { AuthService } from './../../../auth/services/auth.service';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -18,7 +19,8 @@ export class TodosComponent implements OnInit {
   todos: Todo[] = []
 
   constructor(
-    private snackbar: MatSnackBar
+    private snackbar: MatSnackBar,
+    private authService:AuthService
   ) { }
 
   ngOnInit(): void {
@@ -42,6 +44,7 @@ export class TodosComponent implements OnInit {
   }
 
   signOut(): void {
+    this.authService.singOut().subscribe()
 
   }
 }
