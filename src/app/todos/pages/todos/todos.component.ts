@@ -1,3 +1,4 @@
+import { TodosService } from './../../services/todos.service';
 import { AuthService } from './../../../auth/services/auth.service';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
@@ -20,7 +21,8 @@ export class TodosComponent implements OnInit {
 
   constructor(
     private snackbar: MatSnackBar,
-    private authService:AuthService
+    private authService:AuthService,
+    private todosService: TodosService
   ) { }
 
   ngOnInit(): void {
@@ -28,18 +30,48 @@ export class TodosComponent implements OnInit {
   }
 
   loadTodos(): void {
-
+    this.todosService.getTodos()
+    .subscribe(
+      (receivedTodos)=>{
+        this.todos = receivedTodos
+      }
+    )
   }
 
   create(): void {
+    const todo: Todo = this.todoForm.value
+    this.todosService.createTodo(todo)
+    .subscribe(
+      ()=>{
+        this.todoForm.reset()
+        this.snackbar.open('Tarefa salva', 'Ok',{
+          duration: 5000,
+          horizontalPosition: 'right',
+          verticalPosition: 'top'
+        })
+        this.loadTodos()
+      }
+    )
+    }
 
-  }
+    delete(todo: Todo): void {
+      this.todosService.deleteTodo(todo)
+      .subscribe(
+        () => {
+          this.snackbar.open('Tarefa excluída', 'Ok', {
+            duration: 5000,
+            horizontalPosition: 'right',
+            verticalPosition: 'top'
+          })
 
-  delete(todo: Todo): void {
-
-  }
+          this.loadTodos()
+        }
+      )
+    }
 
   toggleDone(todo: Todo): void {
+    todo.done = !todo.done
+    this.todosService.updateTodo(todo).subscribe()
 
   }
 

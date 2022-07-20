@@ -30,29 +30,32 @@ export class RegisterComponent implements OnInit {
     const email =  this.loginForm.value.email
     const password = this.loginForm.value.password
 
-    this.authService.singUpWithEmailAndPassword(email, password)
+    this.authService.signInWithEmailAndPassword(email, password)
     .subscribe(
       () => {
-        this.snackbar.open('Resgistrado com sucesso!', 'Ok',{
-          duration: 5000,
-          horizontalPosition: 'right',
-         verticalPosition: 'top'
-        })
-        this.router.navigateByUrl('/auth/verify-email')
-      }
-    )
-  }
-  signInWithGoogle() {
-    this.authService.signInWithGoogle()
-    .subscribe(
-      ()=>{
-        this.snackbar.open('Registrado com sucesso', 'ok',{
+        this.snackbar.open('Registrado com sucesso!', 'Ok', {
           duration: 5000,
           horizontalPosition: 'right',
           verticalPosition: 'top'
         })
+
+        this.router.navigateByUrl('/auth/verify-email')
       }
     )
+  }
 
+  signInWithGoogle() {
+    this.authService.signInWithGoogle()
+    .subscribe(
+      () => {
+        this.snackbar.open('Registrado com sucesso!', 'Ok', {
+          duration: 5000,
+          horizontalPosition: 'right',
+          verticalPosition: 'top'
+        })
+
+        this.router.navigateByUrl('/auth/verify-email')
+      }
+    )
   }
 }

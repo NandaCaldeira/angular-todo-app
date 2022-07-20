@@ -6,6 +6,7 @@ import { from, tap } from 'rxjs';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { User } from 'src/app/models/User';
 import { GoogleAuthProvider } from 'firebase/auth'
+import { async } from '@firebase/util';
 
 @Injectable({
   providedIn: 'root'
@@ -23,12 +24,19 @@ export class AuthService {
     return this.authentication.authState
   }
   private saveUserData(){
-    return tap((credencials:firebase.default.auth.UserCredential) => {
+    return tap(async (credencials:firebase.default.auth.UserCredential) => {
       const uid = credencials.user?.uid as string
 
       const email = credencials.user?.email as string
 
       const todos:Todo[] = []
+
+      const user= await this.usersCollection.ref.where('email','==',email).get()
+      .then(users=>{
+       return users.docs[0]
+      })
+      if(user==undefined){
+
 
       this.usersCollection.doc(uid).set({
         uid: uid,
@@ -37,6 +45,8 @@ export class AuthService {
       })
 
       credencials.user?.sendEmailVerification()
+
+    }
     })
   }
 
@@ -45,7 +55,7 @@ export class AuthService {
   return from (this.authentication.createUserWithEmailAndPassword(email,password))
   .pipe(
     this.saveUserData()
-    
+
   )
   }
   signInWithEmailAndPassword(email: string, password: string) {
@@ -53,14 +63,14 @@ export class AuthService {
   }
 
   signInWithGoogle (){
-    const googleProvider = new GoogleAuthProvider 
-  
+    const googleProvider = new GoogleAuthProvider
+
     return from (this.authentication.signInWithPopup(googleProvider))
     .pipe(
       this.saveUserData()
     )
   }
-  
+
   singOut(){
     return from (this.authentication.signOut()).pipe(
       tap(()=> {
